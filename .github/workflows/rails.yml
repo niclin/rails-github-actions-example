@@ -12,7 +12,7 @@ jobs:
         env:
           POSTGRES_USER: rails_github_actions
           POSTGRES_DB: rails_github_actions_test
-          POSTGRES_PASSWORD: ""
+          POSTGRES_PASSWORD: postgres
         ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.6.3
+          ruby-version: 2.6.x
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
@@ -47,7 +47,9 @@ jobs:
         env:
           RAILS_ENV: test
           PGHOST: localhost
-          PGUSER: rails_github_actions
+          POSTGRES_DB: rails_github_actions_test
+          POSTGRES_USER: rails_github_actions
+          POSTGRES_PASSWORD: postgres
         run: |
           cp config/database.ci.yml config/database.yml
           rake db:create db:migrate
@@ -55,7 +57,9 @@ jobs:
       - name: Run tests
         env:
           PGHOST: localhost
-          PGUSER: rails_github_actions
+          POSTGRES_DB: rails_github_actions_test
+          POSTGRES_USER: rails_github_actions
+          POSTGRES_PASSWORD: postgres
           PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
         run: rspec
